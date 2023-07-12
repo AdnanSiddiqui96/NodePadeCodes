@@ -1,0 +1,54 @@
+def sell_dollar(price):
+    if price < 257.80:
+        return "Price is too low! Cannot sell dollars."
+    else:
+        return "Dollar is sold"
+
+
+
+using System;
+using Python.Runtime;
+
+namespace TestRnd
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Initialize Python engine
+            PythonEngine.Initialize();
+
+            // Create a new Python scope
+            using (Py.GIL())
+            using (var scope = Py.CreateScope())
+            {
+                // Import the Python script containing the sell_dollar function
+                scope.Exec("import my_python_script");
+
+                // Get a reference to the sell_dollar function
+                dynamic sell_dollar = scope.Get("my_python_script.sell_dollar");
+
+                // Define the input data
+                double price = 0.8;
+
+                // Call the sell_dollar function with the input data
+                dynamic result = sell_dollar(price);
+
+                // Check the type of the result
+                if (result is string)
+                {
+                    // Display an error message
+                    Console.WriteLine(result);
+                }
+                else
+                {
+                    // Display the result
+                    Console.WriteLine($"Dollars sold: {result}");
+                }
+            }
+
+            // Shut down Python engine
+            PythonEngine.Shutdown();
+        }
+    }
+}

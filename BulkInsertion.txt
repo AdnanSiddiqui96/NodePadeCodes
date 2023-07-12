@@ -1,0 +1,50 @@
+#Single insert
+def post(self, request):
+ 
+                title = request.data.get('title') 
+                description = request.data.get('description') 
+                genre = request.data.get('genre') 
+                duration = request.data.get('duration') 
+                poster = request.data.get('poster') 
+                          
+                data = Movie(title=title,description=description,
+                genre=genre,duration=duration,poster=poster)            
+                data.save()
+                return Response({'status': True, 'message': 'A new Movie added successfully'})            
+
+ #-----------------------------------------------------#       
+        # Bulk Insertion
+        # To perform bulk insertion of movie data, you can modify the post method as follows:
+        # In this code, we assume that the movies field in the request data 
+        # is a list of dictionaries, where each dictionary represents
+        # the data for a single movie. We iterate over each movie data,
+        # create a Movie object with the corresponding attributes,
+        # and append it to the movie_objects list. Finally, 
+        # we use the bulk_create method of the Movie model to insert 
+        # all the movie objects in a single database query.
+        # Please make sure that the structure of the
+        # request data matches the format described above for successful bulk insertion.
+        #-----------------------------------------------------#
+
+
+        # movie_list = request.data.get('movies')  # Assuming 'movies' is a list of movie data
+        # movie_objects = []
+        # for movie_data in movie_list:
+        #     title = movie_data.get('title')
+        #     description = movie_data.get('description')
+        #     genre = movie_data.get('genre')
+        #     duration = movie_data.get('duration')
+        #     poster = movie_data.get('poster')
+
+        #     movie_object = Movie(
+        #         title=title,
+        #         description=description,
+        #         genre=genre,
+        #         duration=duration,
+        #         poster=poster
+        #     )
+        #     movie_objects.append(movie_object)
+
+        # Movie.objects.bulk_create(movie_objects)
+
+        # return Response({'status': True, 'message': 'Bulk insertion of movies successful'})

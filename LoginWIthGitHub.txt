@@ -1,0 +1,102 @@
+Here's an example Django API code for implementing a Github login using OAuth2 authentication:
+
+1-First, you will need to create a Github OAuth2 application by visiting the Github Developer Settings page and creating a new OAuth application. This will give you a client_id and client_secret which you will need to use in your Django API code.
+
+2-Install the requests package using pip to make HTTP requests:
+
+pip install requests
+
+
+3-Add the following code to your Django views.py file:
+import requests
+from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate, login
+from django.conf import settings
+
+def github_login(request):
+    # Redirect the user to Github for authentication
+    redirect_url = f'https://github.com/login/oauth/authorize?client_id={settings.GITHUB_CLIENT_ID}&scope=user'
+    return redirect(redirect_url)
+
+def github_callback(request):
+    # Get the authorization code from Github
+    code = request.GET.get('code')
+    
+    # Exchange the authorization code for an access token
+    token_url = 'https://github.com/login/oauth/access_token'
+    data = {
+        'client_id': settings.GITHUB_CLIENT_ID,
+        'client_secret': settings.GITHUB_CLIENT_SECRET,
+        'code': code
+    }
+    headers = {'Accept': 'application/json'}
+    response = requests.post(token_url, data=data, headers=headers)
+    access_token = response.json().get('access_token')
+    
+    # Use the access token to retrieve the user's Github profile
+    profile_url = 'https://api.github.com/user'
+    headers = {'Authorization': f'token {access_token}'}
+    response = requests.get(profile_url, headers=headers)
+    github_user = response.json()
+    
+    # Authenticate the user and log them in
+    user = authenticate(request, github_user=github_user)
+    if user is not None:
+        login(request, user)
+        return redirect('home')
+    else:
+        return render(request, 'error.html', {'error': 'Failed to authenticate user'})
+
+
+4-Add the following URL patterns to your Django urls.py file:
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('github-login/', views.github_login, name='github_login'),
+    path('github-callback/', views.github_callback, name='github_callback'),
+]
+
+
+
+
+5-In your Django settings.py file, add the GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET settings with the values obtained from your Github OAuth2 application:
+
+
+
+GITHUB_CLIENT_ID = 'your_client_id_here'
+GITHUB_CLIENT_SECRET = 'your_client_secret_here'
+
+
+
+
+6-Create a login template with a link to the github_login URL pattern:
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Login</h1>
+<p>Click the button below to login with Github:</p>
+<a href="{% url 'github_login' %}">Login with Github</a>
+{% endblock %}
+
+
+7-Add a URL pattern for your login view and configure your Django authentication settings:
+
+
+# in urls.py
+from django.contrib.auth import views as auth_views
+
+urlpatterns = [
+    # ...
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    # ...
+]
+
+# in settings.py
+LOGIN_URL = 'login'
+
+
+With this code, when a user clicks on the "Login with Github" button, they will be redirected to Github to authenticate with their Github credentials. After successful authentication, they will be redirected back to your Django website with an authorization code. This code will be exchanged for an access
+

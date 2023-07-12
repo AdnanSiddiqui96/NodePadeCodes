@@ -1,0 +1,34 @@
+[3:44 AM, 6/27/2023] HNH Adil: from datetime import timedelta, date
+
+# Add Employee_Slot for Saloon Booking Section
+class employee_timing_slot(APIView):
+    def get(self, request):
+        uid = request.GET['uid']
+        mydata = employee_timing.objects.filter(employee_name_id__uid=uid).values('starttime','endtime').order_by("-created_at")
+        interval = employee_timing.objects.filter(employee_anyone_id__uid=uid).values('starttime','endtime').order_by("-created_at")
+        if mydata or interval:
+            time_slots = []
+            for data in mydata:
+                start_time = datetime.combine(datetime.today(), data['starttime'])
+                end_time = datetime.combine(datetime.today(), data['endtime'])
+                while start_time.time() <= end_time.time():
+                        time_slots.append(start_time.strftime("%H:%M"))
+                        start_time += timedelta(minutes=30)
+            for data in interval:
+                start_time = datetime.combine(datetime.today(), data['starttime'])
+                end_time = datetime.combine(datetime.today(), data['endtime'])
+                while start_time.time() <= end_time.time():
+                        time_slots.append(start_time.strftime("%H:%M"))
+                        start_time += timedelta(minutes=30)
+            return Response({"status":True ,'Time_slots':time_slots})
+        else:
+            return Response({"status":False,'msg':'No Employee available in this uid'})
+[3:44 AM, 6/27/2023] HNH Adil: class employee_timing(BaseModel):
+    starttime = models.TimeField(null=True, blank=True)
+    endtime = models.TimeField(null=True, blank=True)
+    employee_name_id = models.ForeignKey(employee_name, blank = True, null = True, on_delete = models.CASCADE)
+    employee_anyone_id = models.ForeignKey(employee_anyone, blank = True, null = True, on_delete = models.CASCADE)
+    # saloon_id = models.ForeignKey(saloon, blank = True, null = True, on_delete = models.CASCADE)
+
+    def _int_(self):
+        return self.starttime

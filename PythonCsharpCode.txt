@@ -1,0 +1,45 @@
+
+using System;
+using System.Windows.Forms;
+using Python.Runtime;
+
+namespace TestPyCal
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (Py.GIL()) // Required for using Python in C#
+            {
+                // Import the Python script as a module
+                dynamic pyModule = Py.Import("C:\\Users\\adnan\\source\\repos\\TestPyCal\\TestPyCal\\Test.py");
+
+
+                // Call a function from the Python script and get the result
+                int result = pyModule.add(2, 3);
+
+                // Display the result in a message box
+                MessageBox.Show(result.ToString());
+            }
+        }
+    }
+}
+
+
+
+
+System.TypeInitializationException: 'The type initializer for 'Delegates' threw an exception.'
+
+
+BadPythonDllException: Runtime.PythonDLL was not set or does not point to a supported Python runtime DLL. See https://github.com/pythonnet/pythonnet#embedding-python-in-net
+
+MissingMethodException: Failed to load symbol Py_IncRef.
+
+
+
+Win32Exception: The specified procedure could not be found.

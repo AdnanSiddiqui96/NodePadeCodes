@@ -1,0 +1,44 @@
+
+
+class login(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        fetchaccount = Account.objects.filter(email=email).first()
+        
+        if fetchaccount is not None:
+            if handler.verify(password, fetchaccount.password):
+                access_token_payload = {
+                    'id': str(fetchaccount.uid),
+                    'Name': fetchaccount.firstname,
+                    'E-mail': fetchaccount.email,
+                    'Login_as': fetchaccount.role,
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=2),
+                    'iat': datetime.datetime.utcnow(),
+                }
+                
+                if fetchaccount.role == 'admin':
+                    access_token = jwt.encode(access_token_payload, config('adminkey'), algorithm='HS256')
+                elif fetchaccount.role == 'user':
+                    access_token = jwt.encode(access_token_payload, config('userkey'), algorithm='HS256')
+                else:
+                    return Response({"status": False, "message": "Invalid account role"})
+                
+                # savetoken(
+                #     access_token=access_token,
+                #     user_agent=request.META['HTTP_USER_AGENT'],
+                #     created_at=datetime.datetime.now(),
+                #     Role=fetchaccount.role
+                # ).save()
+                
+                return Response({
+                    "status": True,
+                    "message": "Login Successful",
+                    "token": access_token,
+                    "data": access_token_payload
+                })
+            else:
+                return Response({"status": False, "message": "Invalid credentials"})
+        else:
+            return Response({"status": False, "message": "Account not found"})

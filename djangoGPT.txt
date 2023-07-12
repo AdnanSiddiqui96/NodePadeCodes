@@ -1,0 +1,8 @@
+The following is some sample code for a GPT app using the Django web framework.
+views.py
+
+from django.shortcuts import render
+
+def index(request): return render(request, 'gpt_app/index.html')
+
+def generate_text(request): # Create the GPT model here generated_text = "" # Generate the text return render(request, 'gpt_app/generated_text.html', {'generated_text': generated_text})

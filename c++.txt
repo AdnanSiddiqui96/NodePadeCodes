@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cstring>
+
+class Person {
+private:
+    char name[50];
+    int vuid;
+    char gender[10];
+
+public:
+    // Default constructor
+    Person() {
+        name[0] = '\0';
+        vuid = 0;
+        gender[0] = '\0';
+    }
+
+    // Parameterized constructor
+    Person(const char* name, int vuid, const char* gender) {
+        strncpy(this->name, name, sizeof(this->name) - 1);
+        this->name[sizeof(this->name) - 1] = '\0';
+        this->vuid = vuid;
+        strncpy(this->gender, gender, sizeof(this->gender) - 1);
+        this->gender[sizeof(this->gender) - 1] = '\0';
+    }
+
+    // Copy constructor
+    Person(const Person& other) {
+        strncpy(this->name, other.name, sizeof(this->name));
+        this->vuid = other.vuid;
+        strncpy(this->gender, other.gender, sizeof(this->gender));
+    }
+
+    // Function to display person information
+    void displayInformation() {
+        std::cout << "Name: " << name << std::endl;
+        std::cout << "VUID: " << vuid << std::endl;
+        std::cout << "Gender: " << gender << std::endl;
+    }
+};
+
+int main() {
+    // Creating an instance of Person using the default constructor
+    Person person1;
+
+    // Creating an instance of Person using the parameterized constructor
+    const char* name = "MUHAMMAD";
+    int vuid = 12345678;
+    const char* gender = "M";
+    Person person2(name, vuid, gender);
+
+    // Creating a third instance of Person using the copy constructor
+    Person person3(person2);
+
+    // Displaying the information of all three persons
+    std::cout << "Person 1:" << std::endl;
+    person1.displayInformation();
+    std::cout << std::endl;
+
+    std::cout << "Person 2:" << std::endl;
+    person2.displayInformation();
+    std::cout << std::endl;
+
+    std::cout << "Person 3:" << std::endl;
+    person3.displayInformation();
+    std::cout << std::endl;
+
+    return 0;
+}
